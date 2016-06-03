@@ -1,0 +1,96 @@
+/*
+ * The MIT License (MIT)
+ *
+ * Copyright (c) 2016, Max Roncace <me@caseif.net>
+ * Copyright (c) 2016, contributors
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+
+package net.caseif.flint.spleef.command;
+
+import static net.caseif.flint.spleef.Main.EM_COLOR;
+import static net.caseif.flint.spleef.Main.ERROR_COLOR;
+import static net.caseif.flint.spleef.Main.INFO_COLOR;
+import static net.caseif.flint.spleef.Main.LOCALE_MANAGER;
+import static net.caseif.flint.spleef.Main.PREFIX;
+
+import net.caseif.flint.arena.Arena;
+import net.caseif.flint.spleef.Main;
+
+import com.google.common.base.Joiner;
+import com.google.common.base.Optional;
+import org.bukkit.command.CommandSender;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Handler for the remove arena command.
+ *
+ * @author Max Roncacé
+ */
+public class RemoveArenaCommand {
+
+    private static final List<String> warned = new ArrayList<>();
+
+    public static void handle(CommandSender sender, String[] args) {
+        if (sender.hasPermission("flintspleef.arena.remove")) {
+            if (args.length > 2) {
+                String[] idArray = new String[args.length - 2];
+                System.arraycopy(args, 2, idArray, 0, idArray.length);
+                String arenaId = Joiner.on(" ").join(idArray);
+                Optional<Arena> arena = Main.getMinigame().getArena(arenaId);
+                if (arena.isPresent()) {
+                    if (!arena.get().getRound().isPresent() || warned.contains(sender.getName())) {
+                        if (arena.get().getRound().isPresent()) {
+                            LOCALE_MANAGER.getLocalizable("message.info.command.remove.round-end")
+                                    .withPrefix(PREFIX + INFO_COLOR).sendTo(sender);
+                            arena.get().getRound().get().end();
+                        }
+                        warned.remove(sender.getName());
+                        String id = arena.get().getId();
+                        String name = arena.get().getName();
+                        Main.getMinigame().removeArena(arena.get());
+                        LOCALE_MANAGER.getLocalizable("message.info.command.remove.success")
+                                .withPrefix(PREFIX + INFO_COLOR).withReplacements(EM_COLOR + name + INFO_COLOR,
+                                EM_COLOR + id + INFO_COLOR).sendTo(sender);
+                    } else {
+                        LOCALE_MANAGER.getLocalizable("message.info.command.remove.contains-round")
+                                .withPrefix(PREFIX + ERROR_COLOR).withReplacements(EM_COLOR + arena.get().getName()
+                                + INFO_COLOR).sendTo(sender);
+                        warned.add(sender.getName());
+                    }
+                } else {
+                    sender.sendMessage(PREFIX + ERROR_COLOR + "Arena with ID " + EM_COLOR + arenaId + ERROR_COLOR
+                            + " does not exist");
+                }
+            } else {
+                String msg = PREFIX + ERROR_COLOR + LOCALE_MANAGER.getLocalizable("message.error.general.too-few-args")
+                        .localizeFor(sender) + LOCALE_MANAGER.getLocalizable("message.error.general.usage")
+                        .withReplacements("/fs arena remove [arena]").localizeFor(sender);
+                sender.sendMessage(msg);
+            }
+        } else {
+            LOCALE_MANAGER.getLocalizable("message.error.general.permission").withPrefix(PREFIX + ERROR_COLOR)
+                    .sendTo(sender);
+        }
+    }
+
+}

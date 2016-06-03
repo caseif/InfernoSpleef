@@ -1,0 +1,73 @@
+#
+# The MIT License (MIT)
+#
+# Copyright (c) 2016, Max Roncace <me@caseif.net>
+# Copyright (c) 2016, contributors
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+
+name: FlintSpleef
+description: A technology demonstration for the Flint framework.
+author: Max Roncacé
+website: http://caseif.net/
+version: 1.0.0
+main: net.caseif.flint.spleef.Main
+depend: [Steel]
+
+commands:
+  fs:
+    description: Base command for the plugin.
+    usage: /fs [command]
+
+permissions:
+  flintspleef.*:
+    description: Grants full control of the plugin.
+    default: op
+    children:
+      flintspleef.arena.*: true
+      flintspleef.play: true
+      flintspleef.lobby.*: true
+  flintspleef.arena.*:
+    description: Grants full control of arenas.
+    default: op
+    children:
+      flintspleef.arena.create: true
+      flintspleef.arena.remove: true
+  flintspleef.arena.create:
+    description: Grants permission to create arenas.
+    default: op
+  flintspleef.arena.remove:
+    description: Grants permission to destroy arenas.
+    default: op
+  flintspleef.play:
+    description: Grants permission to play FlintSpleef.
+    default: true
+  flintspleef.lobby.*:
+    description: Grants all lobby sign permissions.
+    default: op
+    children:
+      flintspleef.lobby.create: true
+      flintspleef.lobby.destroy: true
+  flintspleef.lobby.create:
+    description: Grants permission to create lobby signs.
+    default: op
+  flintspleef.lobby.destroy:
+    description: Grants permissiont o destroy lobby signs.
+    default: op
