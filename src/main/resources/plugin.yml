@@ -28,7 +28,7 @@ description: A technology demonstration for the Flint framework.
 author: Max Roncacé
 website: http://caseif.net/
 version: 1.0.0
-main: net.caseif.flint.spleef.Main
+main: net.caseif.flint.infernospleefospleef.Main
 depend: [Steel]
 
 commands:

@@ -23,25 +23,33 @@
  * THE SOFTWARE.
  */
 
-package net.caseif.flint.spleef;
+package net.caseif.infernospleef;
 
+import net.caseif.infernospleef.command.CreateArenaCommand;
+import net.caseif.infernospleef.command.JoinArenaCommand;
+import net.caseif.infernospleef.command.LeaveArenaCommand;
+import net.caseif.infernospleef.command.RemoveArenaCommand;
+import net.caseif.infernospleef.listener.BlockListener;
+import net.caseif.infernospleef.listener.MinigameListener;
+import net.caseif.infernospleef.listener.PlayerListener;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.inject.Inject;
 import net.caseif.flint.FlintCore;
 import net.caseif.flint.config.ConfigNode;
 import net.caseif.flint.minigame.Minigame;
 import net.caseif.flint.round.LifecycleStage;
-import net.caseif.flint.spleef.listener.BlockListener;
-import net.caseif.flint.spleef.listener.MinigameListener;
-import net.caseif.flint.spleef.listener.PlayerListener;
-
-import com.google.common.collect.ImmutableSet;
-import com.google.inject.Inject;
 import org.slf4j.Logger;
 import org.spongepowered.api.Sponge;
+import org.spongepowered.api.command.args.GenericArguments;
+import org.spongepowered.api.command.dispatcher.SimpleDispatcher;
+import org.spongepowered.api.command.spec.CommandSpec;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.game.state.GamePreInitializationEvent;
 import org.spongepowered.api.item.ItemType;
 import org.spongepowered.api.item.ItemTypes;
 import org.spongepowered.api.item.inventory.ItemStack;
+import org.spongepowered.api.plugin.Dependency;
 import org.spongepowered.api.plugin.Plugin;
 import org.spongepowered.api.text.Text;
 import org.spongepowered.api.text.format.TextColor;
@@ -53,7 +61,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
-@Plugin(id = "infernospleef", name = "InfernoSpleef", version = "1.0.0-SNAPSHOT")
+@Plugin(id = "infernospleef", name = "InfernoSpleef", version = "1.0.0-SNAPSHOT",
+        dependencies = @Dependency(id = "inferno", version = "[1.2.0,)"))
+
 public class Main {
 
     @Inject private Logger logger;
@@ -106,7 +116,7 @@ public class Main {
         Sponge.getEventManager().registerListeners(this, new BlockListener());
         Sponge.getEventManager().registerListeners(this, new PlayerListener());
 
-        //Sponge.getGame().getCommandManager().get("fs").setExecutor(new CommandHandler()); //TODO(?)
+        registerCommands();
 
         //MIN_PLAYERS = getConfig().getInt("min-prep-players"); //TODO
         MIN_PLAYERS = 2;
@@ -149,6 +159,34 @@ public class Main {
 
     public static Minigame getMinigame() {
         return mg;
+    }
+
+    private void registerCommands() {
+        SimpleDispatcher rootCmd = new SimpleDispatcher();
+
+        rootCmd.register(CommandSpec.builder()
+                .permission("infernospleef.arena.create")
+                .executor(new CreateArenaCommand())
+                .build(), "createarena");
+
+        rootCmd.register(CommandSpec.builder()
+                .permission("infernospleef.play")
+                .arguments(GenericArguments.remainingJoinedStrings(Text.of("arena")))
+                .executor(new JoinArenaCommand())
+                .build(), "join");
+
+        rootCmd.register(CommandSpec.builder()
+                .permission("infernospleef.play")
+                .executor(new LeaveArenaCommand())
+                .build(), "leave");
+
+        rootCmd.register(CommandSpec.builder()
+                .permission("infernospleef.arena.remove")
+                .arguments(GenericArguments.remainingJoinedStrings(Text.of("arena")))
+                .executor(new RemoveArenaCommand())
+                .build(), "removearena");
+
+        Sponge.getCommandManager().register(this, rootCmd);
     }
 
     private static void loadStrings() throws IOException {

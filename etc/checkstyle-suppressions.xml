@@ -6,4 +6,5 @@
     <suppress checks="AbbreviationAsWordInName" files="^src[\\/](main|test)[\\/]java"/>
     <suppress checks="JavadocMethod" files="^src[\\/](main|test)[\\/]java"/>
     <suppress checks="Indentation" files="^src[\\/](main|test)[\\/]java"/>
+    <suppress checks="JavadocMethod" files="^src[\\/](main|test)[\\/]java"/>
 </suppressions>

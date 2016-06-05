@@ -75,9 +75,15 @@ license {
 checkstyle {
     configProperties = [
             'name'        : project.name,
-            'year'        : project.inceptionYear
+            'year'        : project.inceptionYear,
+            'basedir': project.projectDir,
+            'severity': 'warning'
     ]
     configFile = file('etc/checkstyle.xml')
+}
+
+tasks.withType(Checkstyle){
+    exclude '**/*.properties'
 }
 
 jar.manifest.mainAttributes(
