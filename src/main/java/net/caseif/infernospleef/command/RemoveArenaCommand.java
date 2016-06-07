@@ -28,8 +28,8 @@ package net.caseif.infernospleef.command;
 import static net.caseif.infernospleef.Main.EM_COLOR;
 import static net.caseif.infernospleef.Main.ERROR_COLOR;
 import static net.caseif.infernospleef.Main.INFO_COLOR;
-import static net.caseif.infernospleef.Main.PREFIX;
 import static net.caseif.infernospleef.Main.getString;
+import static net.caseif.infernospleef.Main.withPrefix;
 
 import net.caseif.infernospleef.Main;
 
@@ -57,9 +57,9 @@ public class RemoveArenaCommand implements CommandExecutor {
     public CommandResult execute(CommandSource sender, CommandContext args) {
         String arenaId = args.<String>getOne("arena").orElse(null);
         if (arenaId == null) {
-            sender.sendMessage(Text.builder(getString("message.error.general.too-few-args"))
+            sender.sendMessage(withPrefix(Text.builder(getString("message.error.general.too-few-args"))
                     .append(Text.of(getString("message.error.general.usage", "/fs removearena [arena]")))
-                    .insert(0, PREFIX).color(ERROR_COLOR).build());
+                    .color(ERROR_COLOR).build()));
             return CommandResult.empty();
         }
 
@@ -71,24 +71,24 @@ public class RemoveArenaCommand implements CommandExecutor {
         }
 
         if (arena.get().getRound().isPresent() && !warned.contains(sender.getName())) {
-            sender.sendMessage(Text.builder(getString("message.info.command.remove.contains-round",
+            sender.sendMessage(withPrefix(Text.builder(getString("message.info.command.remove.contains-round",
                     arena.get().getDisplayName()))
-                    .insert(0, PREFIX).color(ERROR_COLOR).build());
+                    .color(ERROR_COLOR).build()));
             warned.add(sender.getName());
             return CommandResult.empty();
         }
 
         if (arena.get().getRound().isPresent()) {
-            sender.sendMessage(Text.builder(getString("message.info.command.remove.round-end")).insert(0, PREFIX)
-                    .color(INFO_COLOR).build());
+            sender.sendMessage(withPrefix(Text.builder(getString("message.info.command.remove.round-end"))
+                    .color(INFO_COLOR).build()));
             arena.get().getRound().get().end();
         }
         warned.remove(sender.getName());
         String id = arena.get().getId();
         String name = arena.get().getDisplayName();
         Main.getMinigame().removeArena(arena.get());
-        sender.sendMessage(Text.builder(getString("message.info.command.remove.success", name, id)).insert(0, PREFIX)
-                .color(INFO_COLOR).build());
+        sender.sendMessage(withPrefix(Text.builder(getString("message.info.command.remove.success", name, id))
+                .color(INFO_COLOR).build()));
         return CommandResult.success();
     }
 

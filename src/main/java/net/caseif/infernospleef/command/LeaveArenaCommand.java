@@ -25,6 +25,11 @@
 
 package net.caseif.infernospleef.command;
 
+import static net.caseif.infernospleef.Main.ERROR_COLOR;
+import static net.caseif.infernospleef.Main.INFO_COLOR;
+import static net.caseif.infernospleef.Main.getString;
+import static net.caseif.infernospleef.Main.withPrefix;
+
 import net.caseif.infernospleef.Main;
 
 import com.google.common.base.Optional;
@@ -46,21 +51,21 @@ public class LeaveArenaCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource sender, CommandContext args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Text.builder(Main.getString("message.error.general.in-game")).insert(0, Main.PREFIX)
-                    .color(Main.ERROR_COLOR).build());
+            sender.sendMessage(withPrefix(Text.builder(getString("message.error.general.in-game"))
+                    .color(ERROR_COLOR).build()));
             return CommandResult.empty();
         }
 
         Optional<Challenger> challenger = Main.getMinigame().getChallenger(((Player) sender).getUniqueId());
         if (!challenger.isPresent()) {
-            sender.sendMessage(Text.builder("You are not in a round!").insert(0, Main.PREFIX).color(Main.ERROR_COLOR)
-                    .build());
+            sender.sendMessage(withPrefix(Text.builder("You are not in a round!")
+                    .color(ERROR_COLOR).build()));
             return CommandResult.empty();
         }
 
         challenger.get().removeFromRound();
-        sender.sendMessage(Text.builder(Main.getString("message.info.command.leave.success")).insert(0, Main.PREFIX)
-                .color(Main.INFO_COLOR).build());
+        sender.sendMessage(withPrefix(Text.builder(getString("message.info.command.leave.success"))
+                .color(INFO_COLOR).build()));
         return CommandResult.success();
     }
 

@@ -25,6 +25,7 @@
 
 package net.caseif.infernospleef.listener;
 
+import static net.caseif.infernospleef.Main.withPrefix;
 import static net.caseif.infernospleef.command.CreateArenaCommand.WIZARDS;
 import static net.caseif.infernospleef.command.CreateArenaCommand.WIZARD_FIRST_BOUND;
 import static net.caseif.infernospleef.command.CreateArenaCommand.WIZARD_ID;
@@ -56,7 +57,7 @@ import org.spongepowered.api.world.World;
 public class PlayerListener {
 
     @Listener
-    public void onMessageChannel(MessageChannelEvent event) {
+    public void onMessageChannel(MessageChannelEvent.Chat event) {
         java.util.Optional<Player> plOpt = event.getCause().first(Player.class);
         if (!plOpt.isPresent()) {
             return;
@@ -65,37 +66,39 @@ public class PlayerListener {
 
         if (WIZARDS.containsKey(pl.getUniqueId())) {
             int stage = WIZARDS.get(pl.getUniqueId());
-            if (event.getMessage().toPlain()
+
+            if (event.getRawMessage().toPlain()
                     .equalsIgnoreCase(Main.getString("message.info.command.create.cancel-keyword"))) {
                 event.setMessageCancelled(true);
                 WIZARDS.remove(pl.getUniqueId());
                 WIZARD_INFO.remove(pl.getUniqueId());
-                pl.sendMessage(Text.builder(Main.getString("message.info.command.create.cancelled"))
-                        .insert(0, Main.PREFIX).color(Main.ERROR_COLOR).build());
+                pl.sendMessage(withPrefix(Text.builder(Main.getString("message.info.command.create.cancelled"))
+                        .color(Main.ERROR_COLOR).build()));
                 return;
             }
             event.setMessageCancelled(true);
             switch (stage) {
                 case WIZARD_ID:
-                    if (!Main.getMinigame().getArena(event.getMessage().toPlain()).isPresent()) {
+                    if (!Main.getMinigame().getArena(event.getRawMessage().toPlain()).isPresent()) {
                         increment(pl);
-                        WIZARD_INFO.get(pl.getUniqueId())[WIZARD_ID] = event.getMessage();
-                        pl.sendMessage(Text.builder(Main.getString("message.info.command.create.id",
-                                event.getMessage().toPlain().toLowerCase()))
-                                .insert(0, Main.PREFIX).color(Main.INFO_COLOR).build());
+                        WIZARD_INFO.get(pl.getUniqueId())[WIZARD_ID] = event.getRawMessage().toPlain();
+                        pl.sendMessage(withPrefix(Text.builder(Main.getString("message.info.command.create.id",
+                                event.getRawMessage().toPlain().toLowerCase()))
+                                .color(Main.INFO_COLOR).build()));
                     } else {
-                        pl.sendMessage(Text.builder(Main.getString("message.error.command.create.id-already-exists"))
-                                .insert(0, Main.PREFIX).color(Main.ERROR_COLOR).build());
+                        pl.sendMessage(withPrefix(Text.builder(
+                                Main.getString("message.error.command.create.id-already-exists"))
+                                .color(Main.ERROR_COLOR).build()));
                     }
                     break;
                 case WIZARD_NAME:
                     increment(pl);
-                    WIZARD_INFO.get(pl.getUniqueId())[WIZARD_NAME] = event.getMessage();
-                    pl.sendMessage(Text.builder(Main.getString("message.info.command.create.name",
-                            event.getMessage().toPlain())).insert(0, Main.PREFIX).color(Main.INFO_COLOR).build());
+                    WIZARD_INFO.get(pl.getUniqueId())[WIZARD_NAME] = event.getRawMessage().toPlain();
+                    pl.sendMessage(withPrefix(Text.builder(Main.getString("message.info.command.create.name",
+                            event.getRawMessage().toPlain())).color(Main.INFO_COLOR).build()));
                     break;
                 case WIZARD_SPAWN_POINT:
-                    if (event.getMessage().toPlain()
+                    if (event.getRawMessage().toPlain()
                             .equalsIgnoreCase(Main.getString("message.info.command.create.ok-keyword"))) {
                         if (pl.getWorld().getName().equals(
                                 ((Location3D) WIZARD_INFO.get(pl.getUniqueId())[WIZARD_FIRST_BOUND])
@@ -109,14 +112,15 @@ public class PlayerListener {
                             Main.getMinigame().createArena((String) info[WIZARD_ID], (String) info[WIZARD_NAME],
                                     spawn, new Boundary((Location3D) info[WIZARD_FIRST_BOUND],
                                             (Location3D) info[WIZARD_SECOND_BOUND]));
-                            pl.sendMessage(Text.builder(Main.getString("message.info.command.create.success",
-                                    "/is join " + ((String) info[WIZARD_ID]).toLowerCase() + Main.INFO_COLOR))
-                                    .insert(0, Main.PREFIX).color(Main.INFO_COLOR).build());
+                            pl.sendMessage(withPrefix(Text.builder(Main.getString("message.info.command.create.success",
+                                    "/is join " + ((String) info[WIZARD_ID]).toLowerCase()))
+                                    .color(Main.INFO_COLOR).build()));
                             WIZARDS.remove(pl.getUniqueId());
                             WIZARD_INFO.remove(pl.getUniqueId());
                         } else {
-                            pl.sendMessage(Text.builder(Main.getString("message.error.command.create.bad-spawn"))
-                                    .insert(0, Main.PREFIX).color(Main.ERROR_COLOR).build());
+                            pl.sendMessage(withPrefix(Text.builder(
+                                    Main.getString("message.error.command.create.bad-spawn"))
+                                    .color(Main.ERROR_COLOR).build()));
                         }
                         break;
                     }
@@ -149,9 +153,9 @@ public class PlayerListener {
                     increment(pl);
                     WIZARD_INFO.get(pl.getUniqueId())[WIZARD_FIRST_BOUND]
                             = new Location3D(block.getExtent().getName(), block.getX(), 0, block.getZ());
-                    pl.sendMessage(Text.builder(Main.getString("message.info.command.create.bound-1",
+                    pl.sendMessage(withPrefix(Text.builder(Main.getString("message.info.command.create.bound-1",
                             "(x=" + block.getX() + ", z=" + block.getZ() + ")"))
-                            .insert(0, Main.PREFIX).color(Main.INFO_COLOR).build());
+                            .color(Main.INFO_COLOR).build()));
                     break;
                 case WIZARD_SECOND_BOUND:
                     if (block.getExtent().getName().equals(
@@ -162,13 +166,13 @@ public class PlayerListener {
                         WIZARD_INFO.get(pl.getUniqueId())[WIZARD_SECOND_BOUND]
                                 = new Location3D(block.getExtent().getName(), block.getX(),
                                 block.getExtent().getBlockMax().getY(), block.getZ());
-                        pl.sendMessage(Text.builder(Main.getString("message.info.command.create.bound-2",
+                        pl.sendMessage(withPrefix(Text.builder(Main.getString("message.info.command.create.bound-2",
                                 "(x=" + block.getX() + ", z=" + block.getZ() + ")",
                                 Main.getString("message.info.command.create.ok-keyword")))
-                                .insert(0, Main.PREFIX).color(Main.INFO_COLOR).build());
+                                .color(Main.INFO_COLOR).build()));
                     } else {
-                        pl.sendMessage(Text.builder(Main.getString("message.error.command.create.bad-bound"))
-                                .insert(0, Main.PREFIX).color(Main.ERROR_COLOR).build());
+                        pl.sendMessage(withPrefix(Text.builder(Main.getString("message.error.command.create.bad-bound"))
+                                .color(Main.ERROR_COLOR).build()));
                     }
                     break;
                 default:

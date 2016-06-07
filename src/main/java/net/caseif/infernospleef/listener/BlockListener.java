@@ -30,6 +30,8 @@ import net.caseif.infernospleef.Main;
 import com.google.common.base.Optional;
 import net.caseif.flint.challenger.Challenger;
 import org.spongepowered.api.data.key.Keys;
+import org.spongepowered.api.data.type.HandType;
+import org.spongepowered.api.data.type.HandTypes;
 import org.spongepowered.api.entity.living.player.Player;
 import org.spongepowered.api.event.Listener;
 import org.spongepowered.api.event.block.ChangeBlockEvent;
@@ -59,8 +61,8 @@ public class BlockListener {
                 event.setCancelled(true); // can't break blocks in advance
             }
             // check if they're holding a shovel
-            if (!player.get().getItemInHand().isPresent()
-                    || !Main.SHOVELS.contains(player.get().getItemInHand().get().getItem())) {
+            if (!player.get().getItemInHand(HandTypes.MAIN_HAND).isPresent()
+                    || !Main.SHOVELS.contains(player.get().getItemInHand(HandTypes.MAIN_HAND).get().getItem())) {
                 event.setCancelled(true); // can't break blocks without a shovel
             }
         }
@@ -76,9 +78,9 @@ public class BlockListener {
         // check if the damager is a challenger
         Optional<Challenger> challenger = Main.getMinigame().getChallenger(player.get().getUniqueId());
         if (challenger.isPresent()) {
-            if (player.get().getItemInHand().isPresent()) {
-                if (player.get().getItemInHand().get().getValue(Keys.ITEM_DURABILITY).isPresent()) {
-                    player.get().getItemInHand().get().getValue(Keys.ITEM_DURABILITY).get().set(0);
+            if (player.get().getItemInHand(HandTypes.MAIN_HAND).isPresent()) {
+                if (player.get().getItemInHand(HandTypes.MAIN_HAND).get().getValue(Keys.ITEM_DURABILITY).isPresent()) {
+                    player.get().getItemInHand(HandTypes.MAIN_HAND).get().getValue(Keys.ITEM_DURABILITY).get().set(0);
                 }
             }
         }

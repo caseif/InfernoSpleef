@@ -63,7 +63,6 @@ import java.util.Properties;
 
 @Plugin(id = "infernospleef", name = "InfernoSpleef", version = "1.0.0-SNAPSHOT",
         dependencies = @Dependency(id = "inferno", version = "[1.2.0,)"))
-
 public class Main {
 
     @Inject private Logger logger;
@@ -74,7 +73,7 @@ public class Main {
     public static final String PREPARING_STAGE_ID = "preparing";
     public static final String PLAYING_STAGE_ID = "playing";
 
-    public static final Text PREFIX = Text.builder("[InfernoSpleef] ").color(TextColors.GREEN).build();
+    private static final Text PREFIX = Text.builder("[InfernoSpleef] ").color(TextColors.GREEN).build();
     public static final TextColor INFO_COLOR = TextColors.DARK_AQUA;
     public static final TextColor ERROR_COLOR = TextColors.RED;
     public static final TextColor EM_COLOR = TextColors.GOLD;
@@ -129,15 +128,15 @@ public class Main {
         SHOVEL = ItemStack.of(shovelItem, 1);
 
         // Flint initialization
-        mg = FlintCore.registerPlugin("InfernoSpleef");
+        mg = FlintCore.registerPlugin("infernospleef");
         mg.getEventBus().register(new MinigameListener());
 
         ImmutableSet<LifecycleStage> stages = ImmutableSet.copyOf(new LifecycleStage[]{
                 new LifecycleStage(WAITING_STAGE_ID, -1),
                 //new LifecycleStage(PREPARING_STAGE_ID, getConfig().getInt("prep-time")), //TODO
-                new LifecycleStage(PREPARING_STAGE_ID, 30),
+                new LifecycleStage(PREPARING_STAGE_ID, 10),
                 //new LifecycleStage(PLAYING_STAGE_ID, getConfig().getInt("round-time")) //TODO
-                new LifecycleStage(PLAYING_STAGE_ID, 90)
+                new LifecycleStage(PLAYING_STAGE_ID, 30)
         });
         mg.setConfigValue(ConfigNode.DEFAULT_LIFECYCLE_STAGES, stages);
         //mg.setConfigValue(ConfigNode.MAX_PLAYERS, getConfig().getInt("arena-size")); //TODO
@@ -186,7 +185,7 @@ public class Main {
                 .executor(new RemoveArenaCommand())
                 .build(), "removearena");
 
-        Sponge.getCommandManager().register(this, rootCmd);
+        Sponge.getCommandManager().register(this, rootCmd, "is");
     }
 
     private static void loadStrings() throws IOException {
@@ -200,9 +199,13 @@ public class Main {
     public static String getString(String key, String... replacements) {
         String str = STRINGS.get(key);
         for (int i = 0; i < replacements.length; i++) {
-            str.replaceAll("%" + (i + 1), replacements[i]);
+            str = str.replaceAll("%" + (i + 1), replacements[i]);
         }
         return str;
+    }
+
+    public static Text withPrefix(Text text) {
+        return Text.of(PREFIX, text);
     }
 
 }

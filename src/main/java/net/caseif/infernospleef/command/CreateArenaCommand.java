@@ -25,6 +25,9 @@
 
 package net.caseif.infernospleef.command;
 
+import static net.caseif.infernospleef.Main.getString;
+import static net.caseif.infernospleef.Main.withPrefix;
+
 import net.caseif.infernospleef.Main;
 
 import com.google.common.collect.BiMap;
@@ -57,24 +60,24 @@ public class CreateArenaCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource sender, CommandContext args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Text.builder(Main.getString("message.error.general.in-game")).insert(0, Main.PREFIX)
-                    .color(Main.ERROR_COLOR).build());
+            sender.sendMessage(withPrefix(Text.builder(getString("message.error.general.in-game"))
+                    .color(Main.ERROR_COLOR).build()));
             return CommandResult.empty();
         }
 
         if (WIZARDS.containsKey(((Player) sender).getUniqueId())) {
-            sender.sendMessage(Text.builder(Main.getString("message.error.command.create.already"))
-                    .insert(0, Main.PREFIX).color(Main.ERROR_COLOR).build());
+            sender.sendMessage(withPrefix(Text.builder(getString("message.error.command.create.already"))
+                    .color(Main.ERROR_COLOR).build()));
             return CommandResult.empty();
         }
 
         WIZARDS.put(((Player) sender).getUniqueId(), 0);
         WIZARD_INFO.put(((Player) sender).getUniqueId(), new Object[4]);
-        sender.sendMessage(Text.builder(Main.getString("message.info.command.create.welcome")).insert(0, Main.PREFIX)
-                .color(Main.INFO_COLOR).build());
-        sender.sendMessage(Text.builder(Main.getString("message.info.command.create.exit-note",
-                Main.getString("message.info.command.create.cancel-keyword"))).insert(0, Main.PREFIX)
-                .color(Main.INFO_COLOR).build());
+        sender.sendMessage(withPrefix(Text.builder(getString("message.info.command.create.welcome"))
+                .color(Main.INFO_COLOR).build()));
+        sender.sendMessage(withPrefix(Text.builder(getString("message.info.command.create.exit-note",
+                        getString("message.info.command.create.cancel-keyword")))
+                .color(Main.INFO_COLOR).build()));
 
         return CommandResult.success();
     }

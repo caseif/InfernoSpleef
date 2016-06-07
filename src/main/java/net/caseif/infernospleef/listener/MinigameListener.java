@@ -25,6 +25,8 @@
 
 package net.caseif.infernospleef.listener;
 
+import static net.caseif.infernospleef.Main.withPrefix;
+
 import net.caseif.infernospleef.Main;
 import net.caseif.infernospleef.command.JoinArenaCommand;
 
@@ -65,15 +67,15 @@ public class MinigameListener {
     public void onRoundChangeLifecycleStage(RoundChangeLifecycleStageEvent event) {
         // check if round is in progress
         if (event.getStageAfter().getId().equals(Main.PLAYING_STAGE_ID)) {
-            Text msg = Text.builder(Main.getString("message.info.event.start")).insert(0, Main.PREFIX)
-                    .color(Main.INFO_COLOR).build();
+            Text msg = withPrefix(Text.builder(Main.getString("message.info.event.start"))
+                    .color(Main.INFO_COLOR).build());
             for (Challenger ch : event.getRound().getChallengers()) {
                 Sponge.getServer().getPlayer(ch.getUniqueId()).get().sendMessage(msg);
                 Sponge.getServer().getPlayer(ch.getUniqueId()).get().getInventory().offer(Main.SHOVEL);
             }
         } else if (event.getStageAfter().getId().equals(Main.PREPARING_STAGE_ID)) {
-            Text msg = Text.builder(Main.getString("message.info.event.prepare")).insert(0, Main.PREFIX)
-                    .color(Main.INFO_COLOR).build();
+            Text msg = withPrefix(Text.builder(Main.getString("message.info.event.prepare"))
+                    .color(Main.INFO_COLOR).build());
             for (Challenger ch : event.getRound().getChallengers()) {
                 Sponge.getServer().getPlayer(ch.getUniqueId()).get().sendMessage(msg);
             }
@@ -84,12 +86,12 @@ public class MinigameListener {
     public void onRoundTimerTick(RoundTimerTickEvent event) {
         if (event.getRound().getRemainingTime() % 10 == 0 && event.getRound().getRemainingTime() > 0) {
             if (!event.getRound().getLifecycleStage().getId().equals(Main.WAITING_STAGE_ID)) {
-                Text msg = Text.builder(Main.getString(
+                Text msg = withPrefix(Text.builder(Main.getString(
                         event.getRound().getLifecycleStage().getId().equals(Main.PREPARING_STAGE_ID)
                                 ? "message.info.event.begin-countdown"
                                 : "message.info.event.end-countdown",
-                        event.getRound().getRemainingTime() + "")).insert(0, Main.PREFIX).color(Main.INFO_COLOR)
-                        .build();
+                        event.getRound().getRemainingTime() + "")).color(Main.INFO_COLOR)
+                        .build());
                 for (Challenger ch : event.getRound().getChallengers()) {
                     Sponge.getServer().getPlayer(ch.getUniqueId()).get().sendMessage(msg);
                 }
@@ -115,10 +117,10 @@ public class MinigameListener {
         if (event.getRound().getChallengers().size() <= 1) {
             if (event.getRound().getLifecycleStage().getId().equals(Main.PLAYING_STAGE_ID)) {
                 if (event.getRound().getChallengers().size() == 1) {
-                    Text msg = Text.builder(Main.getString("message.info.event.win",
+                    Text msg = withPrefix(Text.builder(Main.getString("message.info.event.win",
                             event.getRound().getChallengers().toArray(new Challenger[1])[0].getName(),
-                            event.getRound().getArena().getDisplayName())).insert(0, Main.PREFIX).color(Main.INFO_COLOR)
-                            .build();
+                            event.getRound().getArena().getDisplayName())).color(Main.INFO_COLOR)
+                            .build());
                     event.getRound().getChallengers()
                             .forEach(ch -> Sponge.getServer().getPlayer(ch.getUniqueId()).get().sendMessage(msg));
 

@@ -27,8 +27,8 @@ package net.caseif.infernospleef.command;
 
 import static net.caseif.infernospleef.Main.ERROR_COLOR;
 import static net.caseif.infernospleef.Main.INFO_COLOR;
-import static net.caseif.infernospleef.Main.PREFIX;
 import static net.caseif.infernospleef.Main.getString;
+import static net.caseif.infernospleef.Main.withPrefix;
 
 import net.caseif.infernospleef.Main;
 
@@ -53,24 +53,24 @@ public class JoinArenaCommand implements CommandExecutor {
     @Override
     public CommandResult execute(CommandSource sender, CommandContext args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(Text.builder(getString("message.error.general.in-game")).insert(0, PREFIX)
-                    .color(ERROR_COLOR).build());
+            sender.sendMessage(withPrefix(Text.builder(getString("message.error.general.in-game"))
+                    .color(ERROR_COLOR).build()));
             return CommandResult.empty();
         }
 
         String arenaId = args.<String>getOne("arena").orElse(null);
         if (arenaId == null) {
-            sender.sendMessage(Text.builder(getString("message.error.general.too-few-args")).insert(0, PREFIX)
-                    .color(ERROR_COLOR).build());
-            sender.sendMessage(Text.builder(getString("message.error.general.usage", "/fs join [arena]"))
-                    .insert(0, PREFIX).color(ERROR_COLOR).build());
+            sender.sendMessage(withPrefix(Text.builder(getString("message.error.general.too-few-args"))
+                    .color(ERROR_COLOR).build()));
+            sender.sendMessage(withPrefix(Text.builder(getString("message.error.general.usage", "/fs join [arena]"))
+                    .color(ERROR_COLOR).build()));
             return CommandResult.empty();
         }
 
         Optional<Arena> arena = Main.getMinigame().getArena(arenaId);
         if (!arena.isPresent()) {
-            sender.sendMessage(Text.builder(getString("message.error.command.join.not-found", arenaId))
-                    .insert(0, PREFIX).color(ERROR_COLOR).build());
+            sender.sendMessage(withPrefix(Text.builder(getString("message.error.command.join.not-found", arenaId))
+                    .color(ERROR_COLOR).build()));
             return CommandResult.empty();
         }
 
@@ -80,32 +80,30 @@ public class JoinArenaCommand implements CommandExecutor {
         }
 
         if (round.getLifecycleStage().getId().equals(Main.PLAYING_STAGE_ID)) {
-            sender.sendMessage(Text.builder(getString("message.error.command.join.progress")).insert(0, PREFIX)
-                    .color(ERROR_COLOR).build());
+            sender.sendMessage(withPrefix(Text.builder(getString("message.error.command.join.progress"))
+                    .color(ERROR_COLOR).build()));
             return CommandResult.empty();
         }
 
         JoinResult result = round.addChallenger(((Player) sender).getUniqueId());
-        sender.sendMessage(Text.builder(getString("message.info.command.join.success",
-                arena.get().getDisplayName())).insert(0, PREFIX).color(INFO_COLOR).build());
+        sender.sendMessage(withPrefix(Text.builder(getString("message.info.command.join.success",
+                arena.get().getDisplayName())).color(INFO_COLOR).build()));
         switch (result.getStatus()) {
             case SUCCESS:
                 return CommandResult.success();
             case ALREADY_IN_ROUND:
-                sender.sendMessage(Text.builder("You are already in a round!").insert(0, PREFIX).color(ERROR_COLOR)
-                        .build());
+                sender.sendMessage(withPrefix(Text.builder("You are already in a round!").color(ERROR_COLOR).build()));
                 break;
             case ROUND_FULL:
-                sender.sendMessage(Text.builder("The round is full!").insert(0, PREFIX).color(ERROR_COLOR).build());
+                sender.sendMessage(withPrefix(Text.builder("The round is full!").color(ERROR_COLOR).build()));
                 break;
             case PLAYER_OFFLINE:
-                sender.sendMessage(Text.builder("You are... offline? What?").insert(0, PREFIX).color(ERROR_COLOR)
-                        .build());
+                sender.sendMessage(withPrefix(Text.builder("You are... offline? What?").color(ERROR_COLOR).build()));
                 break;
             case INTERNAL_ERROR:
                 //noinspection ThrowableResultOfMethodCallIgnored
-                sender.sendMessage(Text.builder(getString("message.error.command.join.exception",
-                        result.getThrowable().getMessage())).insert(0, PREFIX).color(ERROR_COLOR).build());
+                sender.sendMessage(withPrefix(Text.builder(getString("message.error.command.join.exception",
+                                result.getThrowable().getMessage())).color(ERROR_COLOR).build()));
                 break;
             default:
                 throw new AssertionError();
