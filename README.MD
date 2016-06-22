@@ -5,7 +5,7 @@ Minecraft minigame framework.
 
 ### Installation
 
-InfernoSpleef is a Sponge plugin. To install, simply place the compiled JAR into the `plugins` folder alongside 
+InfernoSpleef is a Sponge plugin. To install, simply place the compiled JAR into the `mods` folder alongside 
 the compiled JAR for [Inferno](https://github.com/caseif/Inferno).
 
 ### Prerequisites
